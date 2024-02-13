@@ -16,10 +16,18 @@ For example:
 $ echo -n '{"field":"ohno"}' | od -A n -t x1 | sed 's/ *//g'
 7b226669656c64223a226f686e6f227d
 
-$ soroban contract invoke --source me --network local --id CC7LGJYXOM5P3MRG3BP4NWZKLCZQBVKN4TDTKXYBEFQCFKDDZOY5PQG2 -- extract --data 7b226669656c64223a226f686e6f227d
+$ soroban contract invoke --source me --network local \
+    --id CC7LGJYXOM5P3MRG3BP4NWZKLCZQBVKN4TDTKXYBEFQCFKDDZOY5PQG2 \
+    -- \
+    extract \
+    --data 7b226669656c64223a226f686e6f227d
 "ohno"
 
-$ soroban -v contract invoke --source me --network local --id CC7LGJYXOM5P3MRG3BP4NWZKLCZQBVKN4TDTKXYBEFQCFKDDZOY5PQG2 -- extract --data 7b226669656c64223a226f686e6f227d
+$ soroban -v contract invoke --source me --network local \
+    --id CC7LGJYXOM5P3MRG3BP4NWZKLCZQBVKN4TDTKXYBEFQCFKDDZOY5PQG2 \
+    -- \
+    extract \
+    --data 7b226669656c64223a226f686e6f227d
 2024-02-13T12:13:27.437496Z DEBUG soroban_cli::log::cost: cost===================== Cost ====================
 CPU used: 5040410
 Bytes read: 3956
