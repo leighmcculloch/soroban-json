@@ -6,10 +6,13 @@ serve:
 
 build:
 	@cd contract-json && soroban contract build --out-dir ../out
+	@cd contract-json-alloc && soroban contract build --out-dir ../out
 
 	soroban contract optimize --wasm ./out/json.wasm
+	soroban contract optimize --wasm ./out/json_alloc.wasm
 
 	ls -lah out/*.optimized.wasm
 
 deploy:
 	soroban contract deploy --wasm out/json.optimized.wasm
+	soroban contract deploy --wasm out/json_alloc.optimized.wasm

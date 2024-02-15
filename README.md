@@ -10,58 +10,26 @@ This repo contains [Soroban] contracts that demonstrate how to decode JSON.
 
 The contract in this repo accepts a bytes containing JSON, and extracts a single field out and returns it.
 
-For example:
+## Costs
+
+Decoding a webauthn JSON and extracting one field uses the following resources.
+
+When using a statically allocated buffer of sufficient size:
+- WASM Size = 3,901 bytes
+- CPU Instructions = 2,407,958
+
+When using dynamically allocated memory:
+- WASM Size = 8,270
+- CPU Instructions = 4,278,990
+
+## Example
+
+The contracts within this repository both accept JSON and return the contents of the challenge field.
 
 ```
-$ echo -n '{"field":"ohno"}' | od -A n -t x1 | sed 's/ *//g'
-7b226669656c64223a226f686e6f227d
+$ echo -n '{"type":"webauthn.get","challenge":"hJHFvaaoU7qkcH9kML46shLL_btpYGCA6ty3ie0M1Qw","origin":"http://localhost:4507","crossOrigin":false}' | od -A n -t x1 | sed 's/ *//g'
+7b2274797065223a22776562617574686e2e676574222c226368616c6c656e6765223a22684a48467661616f5537716b6348396b4d4c343673684c4c5f62747059474341367479336965304d315177222c226f726967696e223a22687474703a2f2f6c6f63616c686f73743a34353037222c2263726f73734f726967696e223a66616c73657d
 
-$ soroban contract invoke --source me --network local \
-    --id CC7LGJYXOM5P3MRG3BP4NWZKLCZQBVKN4TDTKXYBEFQCFKDDZOY5PQG2 \
-    -- \
-    extract \
-    --data 7b226669656c64223a226f686e6f227d
-"ohno"
-
-$ soroban -v contract invoke --source me --network local \
-    --id CC7LGJYXOM5P3MRG3BP4NWZKLCZQBVKN4TDTKXYBEFQCFKDDZOY5PQG2 \
-    -- \
-    extract \
-    --data 7b226669656c64223a226f686e6f227d
-2024-02-13T12:13:27.437496Z DEBUG soroban_cli::log::cost: cost===================== Cost ====================
-CPU used: 5040410
-Bytes read: 3956
-Bytes written: 0
-==============================================
-
-2024-02-13T12:13:27.437950Z DEBUG soroban_cli::log::auth: [
-    VecM(
-        [],
-    ),
-]
-2024-02-13T12:13:27.437964Z DEBUG soroban_cli::log::footprint: LedgerFootprint {
-    read_only: VecM(
-        [
-            ContractData(
-                LedgerKeyContractData {
-                    contract: Contract(
-                        Hash(beb32717733afdb226d85fc6db2a58b300d54de4c7355f01216022a863cbb1d7),
-                    ),
-                    key: LedgerKeyContractInstance,
-                    durability: Persistent,
-                },
-            ),
-            ContractCode(
-                LedgerKeyContractCode {
-                    hash: Hash(b3ec234016bf3ca937fcb81cb86a0d0d44552643e3de93b599cbd363481c4804),
-                },
-            ),
-        ],
-    ),
-    read_write: VecM(
-        [],
-    ),
-}
-2024-02-13T12:13:28.463768Z DEBUG soroban_cli::commands::contract::invoke: result=TransactionResult { fee_charged: 59729, result: TxSuccess(VecM([OpInner(InvokeHostFunction(Success(Hash(3fe6d1046ef38893001c5c13f39d63b2e205b0c7ae8b4f7c2ff87389d36f80ee))))])), ext: V0 }
-"ohno"
+❯ soroban -v contract invoke --network local --source me --id CD3WRM5QRWDCKGZBOEOYINLAHMLZGFDEJCDJVVWJHP6QLMA2AKQAYDSD -- extract --json 7b2274797065223a22776562617574686e2e676574222c226368616c6c656e6765223a22684a48467661616f5537716b6348396b4d4c343673684c4c5f62747059474341367479336965304d315177222c226f726967696e223a22687474703a2f2f6c6f63616c686f73743a34353037222c2263726f73734f726967696e223a66616c73657d
+hJHFvaaoU7qkcH9kML46shLL_btpYGCA6ty3ie0M1Qw
 ```
