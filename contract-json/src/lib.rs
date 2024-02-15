@@ -1,5 +1,4 @@
 #![no_std]
-use core::ops::Range;
 
 use soroban_sdk::{contract, contracterror, contractimpl, Bytes, Env, IntoVal, String};
 
@@ -15,27 +14,17 @@ pub enum Error {
 
 #[derive(serde::Deserialize)]
 struct Data<'a> {
-    pub field: &'a str,
+    pub challenge: &'a str,
 }
 
 #[contractimpl]
 impl Contract {
     /// Extract the 'field' out of the JSON.
-    pub fn extract(e: Env, data: Bytes) -> Result<String, Error> {
-        let (buf, range) = to_buffered_slice::<1024>(&data);
-        let json = &buf[range];
+    pub fn extract(e: Env, json: Bytes) -> Result<String, Error> {
+        let json = json.to_buffer::<1024>();
+        let json = json.as_slice();
         let (data, _): (Data, _) =
             serde_json_core::de::from_slice(json).map_err(|_| Error::JsonDecodeError)?;
-        Ok(data.field.into_val(&e))
+        Ok(data.challenge.into_val(&e))
     }
-}
-
-fn to_buffered_slice<const B: usize>(b: &Bytes) -> ([u8; B], Range<usize>) {
-    let mut buf = [0u8; B];
-    let len = b.len() as usize;
-    {
-        let slice = &mut buf[0..len];
-        b.copy_into_slice(slice);
-    }
-    (buf, 0..len)
 }
